@@ -35,6 +35,7 @@ Vagrant.configure(2) do |config|
       lb_config.vm.provider "virtualbox" do |vb|
         vb.memory = "256"
       end
+      lb_config.vm.provision :shell, path: "provision/nodes.sh"
   end
 
   (2..3).each do |i|
@@ -46,6 +47,7 @@ Vagrant.configure(2) do |config|
         node.vm.provider "virtualbox" do |vb|
           vb.memory = "256"
         end
+        node.vm.provision :shell, path: "provision/nodes.sh"
     end
   end
 

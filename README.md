@@ -12,7 +12,7 @@ The end goal of this project is be able to setup the following:
 ## Pre-requisities
 
 * Decent command line -> I'm using [cmder](http://cmder.net/)
-* Git -> Install __cmder__ and you will get Git
+* Git -> Install [cmder](http://cmder.net/) and you will get Git
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 * [Vagrant](https://www.vagrantup.com/)
 
@@ -29,6 +29,8 @@ __NOTE: MAKE SURE YOUR SHELL IS AN ADMINISTRATOR__
 λ git clone https://github.com/hyeomans/chef-lab
 λ cd chef-lab
 ```
+
+### Files explanation
 
 Go ahead and inspect the Vagrant file. This file contains Ruby which is pretty straightforward,
 in this section you need to take a look at `config.vm.define :chef_server do |chef_server_config|`.
@@ -63,7 +65,7 @@ C:\roblox-chef\chef-lab
 
 This will take a while, if you're in Linux/macOS you might get asked for your password. This is OK.
 
-Once that's done you can open up your browser and go to: `https://chef-server/
+Once that's done you can open up your browser and go to: `https://chef-server/`
 
 You will get a certificate exception, that's OK you can skip it and continue.
 
@@ -71,7 +73,7 @@ Login with `testlabdev` and password `password`
 
 ## Step 2 - Configure ChefDK
 
-
+Download starter package
 
 ```
 C:\roblox-chef\chef-repo
@@ -86,5 +88,25 @@ C:\roblox-chef\chef-repo
 ```
 C:\roblox-chef\chef-repo
 λ chef verify
+```
+
+## Step 3 - Bootstraping nodes
+
+```
+C:\roblox-chef\chef-repo
+λ vagrant up lb web2 web3
+```
+
+```
+C:\roblox-chef\chef-repo
+λ knife bootstrap web3 -x vagrant -P vagrant --sudo --verbose -N web3-node
+```
+
+
+### Step 4 - Adding roles
+
+
+```
+knife node run_list add web3-node "role[lab-linux]"
 ```
 
