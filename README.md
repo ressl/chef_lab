@@ -21,7 +21,7 @@ The end goal of this project is be able to setup the following:
 
 First you have to clone this repository, open up [cmder](http://cmder.net/) and clone it.
 
-__NOTE: MAKE SURE YOUR SHELL IS AN ADMINISTRATOR__
+__NOTE: MAKE SURE YOUR SHELL HAS ADMINISTRATOR PRIVILEGES__
 ```
 λ cd C:\
 λ mkdir git-repos
