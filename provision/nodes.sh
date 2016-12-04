@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 localedef -v -c -i en_US -f UTF-8 en_US.UTF-8
 
-yum update -y
-
 # configure hosts file for our internal network defined by Vagrantfile
 cat >> /etc/hosts <<EOL
 # vagrant environment nodes
