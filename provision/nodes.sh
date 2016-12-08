@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 localedef -v -c -i en_US -f UTF-8 en_US.UTF-8
+wget -P /tmp  https://packages.chef.io/files/stable/chef/12.16.42/el/7/chef-12.16.42-1.el7.x86_64.rpm
+rpm -Uvh  /tmp/chef-12.16.42-1.el7.x86_64.rpm
 
 # configure hosts file for our internal network defined by Vagrantfile
 cat >> /etc/hosts <<EOL

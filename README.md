@@ -9,6 +9,10 @@ The end goal of this project is be able to setup the following:
 * Write your own cookbooks and deploy them to Chef Server.
 * Write tests for Chef
 
+This would be the end result of this provisioning:
+
+![](diagram.png)
+
 ## Prerequisites
 
 * Decent command line -> I'm using [cmder](http://cmder.net/)
@@ -142,7 +146,7 @@ Templates are files that have placeholders for string interpolation, just as Raz
 
 Templates have their own folder structure inside a cookbook. From within the templates you can access [__attributes__](https://docs.chef.io/attributes.html). 
 
-### Leveraging ChefDK to create cookbooks and recipes
+### 3.1 Leveraging ChefDK to create cookbooks and recipes
 
 By the end of this section you will:
 
@@ -154,46 +158,138 @@ Start by deleting files from starter cookbook you won't need
 
 ```
 C:\chef\chef-repo
-λ rm -rf cookbooks/starter roles/starter.rb
+λ  rm -Recurse .\cookbooks\starter\ roles/starter.rb
+λ  rm -Recurse .\roles\starter.rb
 ```
 
-Next step is to generate a new cookbook.
-
-```
-C:\chef\chef-repo
-λ chef generate cookbook nginx
-```
-
-A new directory will be created under cookbooks folder. Inside this cookbook folder we will use ChefDK to create two new recipes.
+Next step is to generate a new cookbook. Let's start with `EPEL`
 
 ```
 C:\chef\chef-repo
-λ chef generate recipe cookbooks/nginx epel
+λ cd cookbooks
 
-C:\chef\chef-repo
-λ chef generate recipe cookbooks/nginx nginx
+C:\chef\chef-repo\cookbooks
+λ chef generate cookbook epel
 ```
 
-Before installing nginx you have to update YUM packages and also install [Epel packages](https://fedoraproject.org/wiki/EPEL/FAQ#What_is_EPEL.3F).
-
-You paste the following __resource statements__ into the new `epel.rb` file:
+Then remove unnecessary `git` files and folders:
 
 ```
-#cookbooks/nginx/recipes/epel.b
-execute "yum update" do
-  command "yum update"
+C:\chef\chef-repo\cookbooks
+λ cd epel
+C:\chef\chef-repo\cookbooks\epel
+λ Remove-Item -Force -Recurse .\.git\
+λ Remove-Item -Force -Recurse .\.gitignore
+```
+
+Inside the Epel cookbook, you will create recipe. This recipe will do nothing more than 
+update yum packages and then install common [Epel packages](https://fedoraproject.org/wiki/EPEL/FAQ#What_is_EPEL.3F).
+
+```
+C:\chef\chef-repo\cookbooks\epel
+λ chef generate recipe . install
+```
+
+Inside this recipe, you need to add these two resources:
+
+```
+#cookbooks/epel/recipes/install.rb
+execute 'yum update' do
+  command 'yum update -y'
 end
 
-#https://fedoraproject.org/wiki/EPEL/FAQ#What_is_EPEL.3F
-yum_package 'epel' do
+# https://fedoraproject.org/wiki/EPEL/FAQ#What_is_EPEL.3F
+yum_package 'epel-release.noarch' do
   action :install
 end
 
 ```
 
-Add the following __resource statements__ `nginx.rb`:
+### 3.2 Upload your first recipe to Chef Server.
+
+Before creating an `nginx` cookbook, you will need to upload your newly created cookbook to Chef Server.
+
+To do that, go back to your command line and type:
+
 ```
-#cookbooks/nginx/recipes/nginx.rb
+C:\roblox-chef\chef-repo <--- Make sure you're at the root of the project
+λ knife cookbook upload epel
+```
+
+Open up your browser and go to [https://chef-server/organizations/testcheflab/cookbooks](https://chef-server/organizations/testcheflab/cookbooks)
+
+You will see your new `epel` cookbook now hosted on your local chef server.
+
+### 3.3 Creating an Nginx cookbook
+
+Now let's create `nginx` cookbook, __go back to cookbooks__ directory, and from there execute:
+
+```
+C:\roblox-chef\chef-repo\cookbooks
+λ chef generate cookbook nginx
+
+C:\roblox-chef\chef-repo\cookbooks
+λ rm -Recurse -Force .\nginx\.git\
+
+C:\roblox-chef\chef-repo\cookbooks
+λ rm .\nginx\.gitignore
+```
+
+`nginx` recipe will have a dependecy on the `epel` cookbook. `epel` packages are required in order 
+to have nginx installed.
+
+Open `cookbooks\nginx\metadata.rb` and add:
+
+```
+# cookbooks\nginx\metadata.rb
+name 'nginx'
+maintainer 'The Authors'
+maintainer_email 'you@example.com'
+license 'all_rights'
+description 'Installs/Configures nginx'
+long_description 'Installs/Configures nginx'
+version '0.1.0'
+
+depends 'epel', '0.1.0' ##Add this line
+
+```
+
+To fulfill this dependency, we will use `berks` command. `berks` is part of
+Berkshelf. Berkshelf is nothing more than a Nuget package manger. Berkshelf will 
+locate your cookbooks dependencies and download them locally.
+
+Search for `cookbooks\nginx\Berksfile` and add the following:
+
+```
+
+source :chef_server
+
+metadata
+
+cookbook 'epel'
+
+```
+
+Go back to your command line and type:
+
+```
+C:\roblox-chef\chef-repo\cookbooks\nginx
+λ berks install
+```
+
+Next step is to generate an `install.rb` recipe:
+
+```
+C:\roblox-chef\chef-repo\cookbooks
+λ chef generate recipe .\nginx\ install
+```
+
+Add the following __resource statements__ `install.rb`:
+
+```
+# cookbooks/nginx/recipes/install.rb
+include_recipe 'epel::install'
+
 yum_package 'nginx' do
   action :install
 end
@@ -206,9 +302,11 @@ end
 service 'nginx' do
   action :start
 end
+
 ```
 
 Create a new template with knife:
+
 ```
 C:\chef\chef-repo
 λ chef generate template cookbooks/nginx index.html.erb
@@ -233,17 +331,31 @@ Paste the following template to `index.html.erb`:
 </html>
 ```
 
-Now you can upload your recipes to Chef server:
+Now you can upload your `nginx` cookbook to Chef server:
 
 ```
-C:\chef\chef-repo
-λ knife cookbook upload --all
+C:\chef\chef-repo\cookbooks
+λ knife cookbook upload nginx
 ```
+
+Finally go back to [https://chef-server/organizations/testcheflab/cookbooks](https://chef-server/organizations/testcheflab/cookbooks) and you will 
+see `nginx` cookbook in there.
+
+### 3.4 Creating an Load Balancer cookbook
+
+Creating the load balancer cookbook would be part of the exercise for this lab.
+
+* Investigate how to install HAProxy manually, you can provision a vagrant box for this.
+* Once you know you can translate those commands to resources on a new cookbook.
+* Upload your new cookbook to Chef server
+* I would recommend to learn how to use Kitchen to test your cookbook locally.
 
 ## Step 4 - Bootstrapping nodes
 
+Go back to the `chef-lab` directory and bring up the missing boxes.
+
 ```
-C:\chef\chef-repo
+C:\chef\\chef-lab
 λ vagrant up lb web2 web3
 ```
 
