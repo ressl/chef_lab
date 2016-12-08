@@ -11,7 +11,7 @@ The end goal of this project is be able to setup the following:
 
 This would be the end result of this provisioning:
 
-![](diagram.png)
+![](images/diagram.png)
 
 ## Prerequisites
 
