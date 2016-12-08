@@ -11,7 +11,7 @@ The end goal of this project is be able to setup the following:
 
 This would be the end result of this provisioning:
 
-![](images/diagram.png)
+![](https://github.com/hyeomans/chef-lab/blob/master/images/diagram.PNG)
 
 ## Prerequisites
 
