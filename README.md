@@ -212,7 +212,7 @@ Before creating an `nginx` cookbook, you will need to upload your newly created 
 To do that, go back to your command line and type:
 
 ```
-C:\roblox-chef\chef-repo <--- Make sure you're at the root of the project
+C:\chef\chef-repo <--- Make sure you're at the root of the project
 λ knife cookbook upload epel
 ```
 
@@ -225,13 +225,13 @@ You will see your new `epel` cookbook now hosted on your local chef server.
 Now let's create `nginx` cookbook, __go back to cookbooks__ directory, and from there execute:
 
 ```
-C:\roblox-chef\chef-repo\cookbooks
+C:\chef\chef-repo\cookbooks
 λ chef generate cookbook nginx
 
-C:\roblox-chef\chef-repo\cookbooks
+C:\chef\chef-repo\cookbooks
 λ rm -Recurse -Force .\nginx\.git\
 
-C:\roblox-chef\chef-repo\cookbooks
+C:\chef\chef-repo\cookbooks
 λ rm .\nginx\.gitignore
 ```
 
@@ -273,14 +273,14 @@ cookbook 'epel'
 Go back to your command line and type:
 
 ```
-C:\roblox-chef\chef-repo\cookbooks\nginx
+C:\chef\chef-repo\cookbooks\nginx
 λ berks install
 ```
 
 Next step is to generate an `install.rb` recipe:
 
 ```
-C:\roblox-chef\chef-repo\cookbooks
+C:\chef\chef-repo\cookbooks
 λ chef generate recipe .\nginx\ install
 ```
 
@@ -359,19 +359,79 @@ C:\chef\\chef-lab
 λ vagrant up lb web2 web3
 ```
 
+Right now, our web-servers don't know how to communicate to our installation of Chef server. `knife` provides an easy way to 
+do this. Usually you run this once.
+
 ```
 C:\chef\chef-repo
-λ knife bootstrap web3 -x vagrant -P vagrant --sudo --verbose -N web3-node
+λ knife bootstrap web3 -x vagrant -P vagrant --sudo --verbose --node-name web3-node
+
+C:\chef\chef-repo
+λ knife bootstrap web2 -x vagrant -P vagrant --sudo --verbose --node-name web2-node
 ```
 
+You can go to [https://chef-server/organizations/testcheflab/nodes](https://chef-server/organizations/testcheflab/nodes) and you will see your new nodes.
+
+### Step 4.1 Bootstrap your HAProxy node
+
+Follow the previous steps to bootstrap your load balancer node.
 
 ### Step 5 - Adding roles
 
+A role is a way to define certain patterns and processes that exist across nodes in an organization as belonging to a single job function. 
+Each role consists of zero (or more) attributes and a run-list. Each node can have zero (or more) roles assigned to it. 
+When a role is run against a node, the configuration details of that node are compared against the attributes of the role, and then the contents 
+of that role’s run-list are applied to the node’s configuration details. When a chef-client runs, it merges its own attributes and run-lists with 
+those contained within each assigned role.
+
+Create a new file under roles directory:
 
 ```
-knife node run_list add web3-node "role[lab-linux]"
+{
+  "name": "webapp-role",
+  "description": "Role to configure all web nodes",
+  "chef_type": "role",
+  "run_list": [
+    "recipe[epel::install]",
+    "recipe[nginx::install]"
+  ]
+}
 ```
 
+Add the roles to your nodes:
+```
+C:\chef\chef-repo
+λ knife node run_list add web2-node 'role[webapp-role]'
+
+C:\chef\chef-repo
+λ knife node run_list add web3-node 'role[webapp-role]'
+```
+
+Now we have to run chef-client on each of the boxes.
+
+```
+C:\chef
+λ cd .\chef-lab\
+C:\chef\chef-lab
+λ vagrant ssh web2
+
+```
+
+Inside do this:
+```
+[vagrant@web2 ~]$ sudo chef-client
+//after it finishes
+[vagrant@web2 ~]$ exit
+```
+
+Now do the same for web3:
+
+```
+[vagrant@web3 ~]$ sudo chef-client
+[vagrant@web3 ~]$ exit
+```
+
+Now you can visit on your browser: [http://web3/](http://web3/) and [http://web2/](http://web2/)
 
 ## Step 6 Exercise - Create HA Proxy cookbook.
 
