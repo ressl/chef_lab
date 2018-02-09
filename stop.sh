@@ -3,12 +3,12 @@
 # debug
 # set -x
 
-vagrant() {
+chef_vagrant() {
   vagrant destroy -f
 }
 
 main() {
-  vagrant
+  chef_vagrant
 }
 
 main "${@}"
