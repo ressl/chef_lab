@@ -12,7 +12,7 @@ chef_download() {
   wget -c -P ${LABHOME}/packages 'https://packages.chef.io/repos/yum/stable/el/7/x86_64/chef-13.7.16-1.el7.x86_64.rpm'
 }
 
-vagrant() {
+chef_vagrant() {
   # bring vms up
   vagrant up
   
@@ -30,7 +30,7 @@ vagrant() {
 
 main() {
   chef_download
-  vagrant
+  chef_vagrant
 }
 
 main "${@}"
