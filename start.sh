@@ -2,8 +2,7 @@
 
 # debug
 # set -x
-declare -r LABHOME
-LABHOME=$(pwd)
+declare -r LABHOME=$(pwd)
 
 chef_download() {
   # download packages
