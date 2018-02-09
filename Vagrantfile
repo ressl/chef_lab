@@ -24,6 +24,7 @@ Vagrant.configure(2) do |config|
       chef_server.vm.provider "virtualbox" do |vb|
         vb.memory = "2048"
       end
+      chef_server.vm.provision "file", source: "packages/chef-server-core_12.17.15-1_amd64.deb", destination: "/tmp/chef-server-core_12.17.15-1_amd64.deb"
       chef_server.vm.provision :shell, path: "provision/chef-server.sh"
   end
 
@@ -35,6 +36,7 @@ Vagrant.configure(2) do |config|
     node.vm.provider "virtualbox" do |vb|
       vb.memory = "256"
     end
+    node.vm.provision "file", source: "packages/chef-13.7.16-1.el7.x86_64.rpm", destination: "/tmp/chef-13.7.16-1.el7.x86_64.rpm"
     node.vm.provision :shell, path: "provision/nodes.sh"
   end
 
@@ -46,6 +48,7 @@ Vagrant.configure(2) do |config|
     node.vm.provider "virtualbox" do |vb|
       vb.memory = "256"
     end
+    node.vm.provision "file", source: "packages/chef_13.7.16-1_amd64.deb", destination: "/tmp/chef_13.7.16-1_amd64.deb"
     node.vm.provision :shell, path: "provision/nodes.sh"
   end
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-apt-get update -y -qq > /dev/null
-apt-get upgrade -y -qq > /dev/null
+#apt-get update -y -qq > /dev/null
+#apt-get upgrade -y -qq > /dev/null
 
-wget -P /tmp https://packages.chef.io/repos/apt/stable/ubuntu/16.04/chef-server-core_12.17.15-1_amd64.deb > /dev/null
 dpkg -i /tmp/chef-server-core_12.17.15-1_amd64.deb
 
 mkdir -p /home/vagrant/chef/.chef/syntax_check_cache

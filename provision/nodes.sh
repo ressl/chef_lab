@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 localedef -v -c -i en_US -f UTF-8 en_US.UTF-8
 if [[ -f /etc/debian_version ]]; then
-  wget -P /tmp  https://packages.chef.io/repos/apt/stable/ubuntu/16.04/chef_13.7.16-1_amd64.deb
   dpkg -i /tmp/chef_13.7.16-1_amd64.deb
 else
-  wget -P /tmp  https://packages.chef.io/repos/yum/stable/el/7/x86_64/chef-13.7.16-1.el7.x86_64.rpm
   rpm -Uvh  /tmp/chef-13.7.16-1.el7.x86_64.rpm
 fi
 
