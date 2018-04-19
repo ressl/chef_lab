@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "web1" do |node|
-    node.vm.box = "bento/centos-7.2"
+    node.vm.box = "bento/centos-7.4"
     node.vm.hostname = "web1"
     node.vm.network :private_network, ip: "10.0.15.21"
     node.vm.network "forwarded_port", guest: 80, host: "8081"
