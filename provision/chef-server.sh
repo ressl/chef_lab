@@ -3,7 +3,7 @@
 #apt-get update -y -qq > /dev/null
 #apt-get upgrade -y -qq > /dev/null
 
-dpkg -i /tmp/chef-server-core_12.17.15-1_amd64.deb
+dpkg -i /tmp/chef-server-core_12.17.33-1_amd64.deb
 
 mkdir -p /home/vagrant/chef/.chef/syntax_check_cache
 
