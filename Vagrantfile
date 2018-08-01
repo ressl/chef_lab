@@ -41,7 +41,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "web2" do |node|
-    node.vm.box = "bento/ubuntu-16.04"
+    node.vm.box = "bento/ubuntu-18.04"
     node.vm.hostname = "web2"
     node.vm.network :private_network, ip: "10.0.15.22"
     node.vm.network "forwarded_port", guest: 80, host: "8082"
